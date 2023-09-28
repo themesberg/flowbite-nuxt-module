@@ -136,7 +136,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     const libPath = await resolvePath('flowbite-vue')
     // nuxt.options.css.push(resolve(libPath, 'index.css'))
-    nuxt.options.css.push(resolve('main.css'))
+    nuxt.options.css.push('flowbite-vue/index.css')
     nuxt.hook('tailwindcss:config', function (tailwindConfig) {
       tailwindConfig.plugins = tailwindConfig.plugins || []
     })
