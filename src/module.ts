@@ -1,4 +1,5 @@
-import { defineNuxtModule, addComponent, createResolver, installModule } from '@nuxt/kit'
+import {defineNuxtModule, addComponent, createResolver, installModule, addImports} from '@nuxt/kit'
+import { name, version } from '../package.json'
 
 interface ComponentGroup {
   chunkName: string
@@ -118,17 +119,24 @@ export interface ModuleOptions {
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: 'nuxt-flowbite',
+    name,
+    version,
     configKey: 'flowbite',
     compatibility: {
-      nuxt: '^3.0.0',
-      bridge: true,
-    },
+      nuxt: '^3.0.0-rc.8'
+    }
   },
   // Default configuration options of the Nuxt module
-  defaults: {},
+  defaults: {
+  },
   async setup(options, nuxt) {
-    const { resolve } = createResolver(import.meta.url)
+    const { resolve, resolvePath } = createResolver(import.meta.url)
+    nuxt.options.build.transpile = ['flowbite-vue', 'floating-vue']
+
+
+    const libPath = await resolvePath('flowbite-vue')
+    // nuxt.options.css.push(resolve(libPath, 'index.css'))
+    nuxt.options.css.push(resolve('main.css'))
     nuxt.hook('tailwindcss:config', function (tailwindConfig) {
       tailwindConfig.plugins = tailwindConfig.plugins || []
     })
@@ -140,8 +148,7 @@ export default defineNuxtModule<ModuleOptions>({
         darkMode: 'class',
         content: {
           files: [
-            resolve('node_modules/flowbite-vue/**/*.{js,jsx,ts,tsx}'),
-            resolve('node_modules/flowbite/**/*.{js,jsx,ts,tsx}')
+            'node_modules/flowbite-vue/**/*.{js,jsx,ts,tsx}',
           ]
         },
         plugins: [
